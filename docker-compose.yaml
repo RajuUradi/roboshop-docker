@@ -1,0 +1,51 @@
+services:
+
+  catalogue:
+    build: ./catalogue
+    image: rajuuradi/catalogue:1.0.0
+    container_name: catalogue
+    depends_on:
+     - mongodb
+
+  user:
+    build: ./user
+    image: rajuuradi/user:1.0.0
+    container_name: user
+    depends_on:
+     - mongodb
+     - redis
+     
+  cart:
+    build: ./cart
+    image: rajuuradi/cart:1.0.0
+    container_name: cart
+    depends_on:
+     - redis
+     - catalogue
+
+  redis:
+   image: redis:7
+   container-name: redis  
+
+  mongodb: 
+    build: ./mongodb
+    image: rajuuradi/mongodb:1.0.0
+    container_name: mongodb
+
+  frontend:
+    build: ./frontend
+    image: rajuuradi/frontend:1.0.0
+    container_name: frontend  
+    ports:
+     - "80:80"  
+    depends_on:
+     - catalogue
+     - user
+     - cart
+
+networks:
+  default:
+    driver: bridge
+    name: roboshop
+    external: false
+
