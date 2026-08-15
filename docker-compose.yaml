@@ -1,5 +1,6 @@
 services:
 
+ # backend components
   catalogue:
     build: ./catalogue
     image: rajuuradi/catalogue:1.0.0
@@ -23,6 +24,26 @@ services:
      - redis
      - catalogue
 
+  shipping:
+   build: ./shipping
+   image: rajuuradi/shipping:1.0.0
+   container_name: shipping
+   depends_on:
+   - mysql
+   - cart
+
+  payment:
+   build: ./payment
+   image: rajuuradi/payment:1.0.0
+   container_name: payment
+   depends_on:
+   - cart
+   - user
+   - rabbitmq
+
+  
+# databases
+
   redis:
    image: redis:7
    container_name: redis  
@@ -32,6 +53,20 @@ services:
     image: rajuuradi/mongodb:1.0.0
     container_name: mongodb
 
+  mysql:
+   build: ./mysql
+   image: rajuuradi/mysql:1.0.0
+   container_name: mysql
+
+  rabbitmq:
+   image: rabbitmq:3
+   environment:
+    RABBITMQ_DEFAULT_USER: "roboshop"
+    RABBITMQ_DEFAULT_PASS: "roboshop123"
+   container_name: rabbitmq
+
+ # frontend 
+ 
   frontend:
     build: ./frontend
     image: rajuuradi/frontend:1.0.0
@@ -42,6 +77,9 @@ services:
      - catalogue
      - user
      - cart
+     - payment
+     - shipping
+
 
 networks:
   default:
